@@ -23,5 +23,14 @@
     <ClInclude Include="Image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SearchImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FullImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PartialImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

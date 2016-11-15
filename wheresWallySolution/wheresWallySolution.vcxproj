@@ -149,7 +149,10 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FullImage.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="PartialImage.h" />
+    <ClInclude Include="SearchImage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
