@@ -73,12 +73,12 @@ public:
 	}
 
 protected:
-	int* matrix;
+	double* matrix;
 	void initialiseMatrix(int width, int height) {
 		count = width * height;
 		length = count - 1;
 
-		matrix = new int[count];
+		matrix = new double[count];
 	}
 };
 

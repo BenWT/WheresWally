@@ -6,6 +6,10 @@
 #define WIDTH 4
 #define HEIGHT 3
 
+void ReadImage();
+void WriteImage();
+void SearchImage();
+
 int main()
 {
 	PartialImage image(WIDTH, HEIGHT);

@@ -10,7 +10,7 @@ public:
 	
 	// Methods
 	void addRow(int* row) {
-		int* m = new int[this->width * (this->height + 1)];
+		double* m = new double[this->width * (this->height + 1)];
 
 		for (int y = 0; y < height + 1; y++) {
 			for (int x = 0; x < width; x++) {
