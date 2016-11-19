@@ -10,24 +10,27 @@ public:
 	int length;
 
 	// Methods
-	int getValue(int i) {
+	double* getMatrix() {
+		return matrix;
+	}
+	double getValue(int i) {
 		return matrix[i];
 	}
-	int getValue(int x, int y) {
+	double getValue(int x, int y) {
 		return matrix[x + (y * width)];
 	}
-	void setValue(int i, int val) {
+	void setValue(int i, double val) {
 		matrix[i] = boundValue(val);
 	}
-	void setValue(int x, int y, int val) {
+	void setValue(int x, int y, double val) {
 		matrix[x + (y * width)] = boundValue(val);
 	}
-	int boundValue(int val) {
+	double boundValue(double val) {
 		if (val > 255) {
-			return 255;
+			return 255.0;
 		}
 		else if (val < 0) {
-			return 0;
+			return 0.0;
 		}
 		else {
 			return val;
@@ -48,17 +51,6 @@ public:
 			std::cout << std::endl;
 		}
 	}
-	void debugPrint() {
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				std::cout << matrix[x + (y * width)] << " ";
-			}
-			std::cout << std::endl;
-		}
-
-		std::cout << "Count: " << count << std::endl;
-		std::cout << "Length: " << length << std::endl;
-	}
 
 	// Constructors
 	Image() {
@@ -68,17 +60,29 @@ public:
 		this->width = width;
 		this->height = height;
 
-		initialiseMatrix(this->width, this->height);
+		initialiseMatrix();
 		fill(0);
+	}
+	Image(int width, int height, double* matrix) {
+		this->width = width;
+		this->height = height;
+
+		initialiseMatrix(matrix);
 	}
 
 protected:
 	double* matrix;
-	void initialiseMatrix(int width, int height) {
+	void initialiseMatrix() {
 		count = width * height;
 		length = count - 1;
 
 		matrix = new double[count];
+	}
+	void initialiseMatrix(double* matrix) {
+		count = width * height;
+		length = count - 1;
+
+		this->matrix = matrix;
 	}
 };
 

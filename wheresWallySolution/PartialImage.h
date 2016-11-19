@@ -29,17 +29,8 @@ public:
 		length = count - 1;
 	}
 
-	// Constructors
-	PartialImage() {
-		std::cout << "Initialised Empty Image." << std::endl;
-	}
-	PartialImage(int width, int height) {
-		this->width = width;
-		this->height = height;
-
-		initialiseMatrix(this->width, this->height);
-		fill(0);
-	}
+	// Inherit Constructors
+	using Image::Image;
 };
 
 #endif
