@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 class Matrix {
 public:
 	int width, height, count, length;
@@ -59,7 +61,53 @@ public:
 	~Matrix() {
 		delete[] structure;
 	}
-	// TODO: Operator overloads
+	Matrix* operator+(const Matrix& other) {
+		Matrix* temp = new Matrix(other.width, other.height);
+
+		for (int i = 0; i < other.width * other.height; i++) {
+			temp->setValue(i, this->structure[i] + other.structure[i]);
+		}
+
+		return temp;
+	}
+	Matrix* operator-(const Matrix& other) {
+		Matrix* temp = new Matrix(other.width, other.height);
+
+		for (int i = 0; i < other.width * other.height; i++) {
+			temp->setValue(i, this->structure[i] - other.structure[i]);
+		}
+
+		return temp;
+	}
+	Matrix* operator=(const Matrix& other) {
+		delete[] structure;
+
+		this->width = other.width;
+		this->height = other.height;
+		this->count = other.count;
+		this->length = other.length;
+		this->structure = other.structure;
+
+		return this;
+	}
+	Matrix* operator*(const Matrix& other) {
+		assert(this->width == other.height);
+		int commonValue = this->width;
+
+		Matrix* temp = new Matrix(other.width, this->height);
+
+		for (int x = 0; x < temp->width; x++) {
+			for (int y = 0; y < temp->height; y++) {
+				int value = 0;
+
+				for (int i = 0; i < commonValue; i++) {
+					value += this->structure[i, y] + other.structure[x, i];
+				}
+
+				temp->setValue(x, y, value);
+			}
+		}
+	}
 protected:
 	double* structure;
 };
