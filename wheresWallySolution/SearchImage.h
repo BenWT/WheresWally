@@ -1,5 +1,4 @@
-#ifndef searchimage_h
-#define searchimage_h
+#pragma once
 
 #include "Image.h"
 
@@ -7,5 +6,3 @@ class SearchImage : public Image {
 	// Inherit Constructors
 	using Image::Image;
 };
-
-#endif

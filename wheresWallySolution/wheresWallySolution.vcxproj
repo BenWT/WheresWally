@@ -150,7 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FullImage.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="PartialImage.h" />
     <ClInclude Include="SearchImage.h" />
   </ItemGroup>

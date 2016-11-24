@@ -1,5 +1,4 @@
-#ifndef fullimage_h
-#define fullimage_h
+#pragma once
 
 #include "Image.h"
 
@@ -8,5 +7,3 @@ public:
 	// Inherit Constructors
 	using Image::Image;
 };
-
-#endif

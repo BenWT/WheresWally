@@ -2,29 +2,23 @@
 #include <sstream>
 #include <fstream>
 #include <istream>
+#include "Globals.h"
 #include "Image.h"
 #include "FullImage.h"
 #include "PartialImage.h"
 #include "SearchImage.h"
 
-#define FULL_WIDTH 1024
-#define FULL_HEIGHT 768
-#define FULL_LENGTH FULL_WIDTH * FULL_HEIGHT
-#define SEARCH_WIDTH 36
-#define SEARCH_HEIGHT 49
-#define SEARCH_LENGTH SEARCH_WIDTH * SEARCH_HEIGHT
-
 bool ReadImage(char*, int , int, double*&);
-PartialImage* FindWally(FullImage*, SearchImage*);
 bool WriteImage(char*, PartialImage*);
+PartialImage* FindWally(FullImage*, SearchImage*);
 
 int main()
 {
 	// Load Image Data
 	double* fullData = new double[FULL_LENGTH];
 	double* searchData = new double[SEARCH_LENGTH];
-	bool readFull = ReadImage("Cluttered_scene.txt", FULL_WIDTH, FULL_HEIGHT, fullData);
-	bool readSearch = ReadImage("Wally_grey.txt", SEARCH_WIDTH, SEARCH_HEIGHT, searchData);
+	bool readFull = ReadImage("images/Cluttered_scene.txt", FULL_WIDTH, FULL_HEIGHT, fullData);
+	bool readSearch = ReadImage("images/Wally_grey.txt", SEARCH_WIDTH, SEARCH_HEIGHT, searchData);
 
 	if (!readFull || !readSearch) {
 		std::cout << "Images could not be loaded correctly." << std::endl;
@@ -39,7 +33,7 @@ int main()
 	PartialImage* result = FindWally(full, search);
 
 	// Output to file
-	WriteImage("Output.pgm", result);
+	WriteImage("images/output.pgm", result);
 
 	delete [] full;
 	delete [] search;
@@ -69,13 +63,6 @@ bool ReadImage(char *fileName, int width, int height, double* &data)
 	}
 }
 
-PartialImage* FindWally(FullImage* full, SearchImage* search)
-{
-	PartialImage* result = new PartialImage(search->width, search->height, search->getMatrix());
-	std::cout << "Unimplemented Search Function." << std::endl;
-	return result;
-}
-
 bool WriteImage(char * fileName, PartialImage* image)
 {
 	unsigned char *out = new unsigned char[image->width * image->height];
@@ -99,4 +86,27 @@ bool WriteImage(char * fileName, PartialImage* image)
 		std::cout << "Failed to create the requested file." << std::endl;
 		return false;
 	}
+}
+
+PartialImage* FindWally(FullImage* full, SearchImage* search)
+{
+	//PartialImage* result = new PartialImage(search->width, search->height, search->getMatrix());
+
+	int bestX = 0; int bestY = 0; double lowestDiff = std::numeric_limits<double>::max();
+
+	/* for (int x = 0; x < full->width - search->width; x++) {
+		for (int y = 0; y < full->height - search->height; y++) {
+			double comparisonValue = 0;
+
+			if (comparisonValue < lowestDiff) {
+				bestX = x;
+				bestY = y;
+				lowestDiff = comparisonValue;
+			}
+		}
+	} */
+
+	PartialImage* result = new PartialImage(full, search->width, search->height, 0, 0);
+	return result;
+	// http://stackoverflow.com/questions/12598818/finding-a-picture-in-a-picture-with-java
 }

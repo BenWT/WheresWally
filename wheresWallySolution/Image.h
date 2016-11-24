@@ -1,5 +1,6 @@
-#ifndef image_h
-#define image_h
+#pragma once
+
+#include "Matrix.h"
 
 class Image {
 public:
@@ -10,21 +11,6 @@ public:
 	int length;
 
 	// Methods
-	double* getMatrix() {
-		return matrix;
-	}
-	double getValue(int i) {
-		return matrix[i];
-	}
-	double getValue(int x, int y) {
-		return matrix[x + (y * width)];
-	}
-	void setValue(int i, double val) {
-		matrix[i] = boundValue(val);
-	}
-	void setValue(int x, int y, double val) {
-		matrix[x + (y * width)] = boundValue(val);
-	}
 	double boundValue(double val) {
 		if (val > 255) {
 			return 255.0;
@@ -36,20 +22,26 @@ public:
 			return val;
 		}
 	}
+	double* getMatrix() {
+		return matrix->getMatrix();
+	}
+	double getValue(int i) {
+		return matrix->getValue(i);
+	}
+	double getValue(int x, int y) {
+		return matrix->getValue(x + (y * width));
+	}
+	void setValue(int i, double val) {
+		matrix->setValue(i, boundValue(val));
+	}
+	void setValue(int x, int y, double val) {
+		matrix->setValue(x, y, boundValue(val));
+	}
 	void fill(int val) {
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				matrix[x + (y * width)] = 0;
-			}
-		}
+		matrix->fill(val);
 	}
 	void print() {
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				std::cout << matrix[x + (y * width)] << " ";
-			}
-			std::cout << std::endl;
-		}
+		matrix->print();
 	}
 
 	// Constructors
@@ -60,31 +52,17 @@ public:
 		this->width = width;
 		this->height = height;
 
-		initialiseMatrix();
+		this->matrix = new Matrix(width, height);
 		fill(0);
 	}
 	Image(int width, int height, double* matrix) {
 		this->width = width;
 		this->height = height;
 
-		initialiseMatrix(matrix);
+		this->matrix = new Matrix(width, height, matrix);
 	}
 
 protected:
-	double* matrix;
-	void initialiseMatrix() {
-		count = width * height;
-		length = count - 1;
-
-		matrix = new double[count];
-	}
-	void initialiseMatrix(double* matrix) {
-		count = width * height;
-		length = count - 1;
-
-		this->matrix = matrix;
-	}
+	Matrix* matrix;
 };
-
-#endif
 
