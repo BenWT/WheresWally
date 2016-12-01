@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include "Matrix.h"
 
 class Image {
@@ -51,15 +52,29 @@ public:
 	Image(int width, int height) {
 		this->width = width;
 		this->height = height;
-
 		this->matrix = new Matrix(width, height);
+
 		fill(0);
 	}
 	Image(int width, int height, double* matrix) {
 		this->width = width;
 		this->height = height;
-
 		this->matrix = new Matrix(width, height, matrix);
+	}
+	Image(const Image& other) {
+		this->width = other.width;
+		this->height = other.height;
+		this->matrix = other.matrix;
+	}
+
+	//Operator Overloads
+	// TODO Implement arithmetics
+	Image* operator=(const Image& other) {
+		this->width = other.width;
+		this->height = other.height;
+		this->matrix = other.matrix;
+
+		return this;
 	}
 
 protected:
