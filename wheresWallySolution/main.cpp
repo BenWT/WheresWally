@@ -35,6 +35,8 @@ int main()
 	// Output to file
 	WriteImage("images/output.pgm", result);
 
+	system("pause"); // TODO Remove for release
+
 	delete [] full;
 	delete [] search;
 	delete [] result;
