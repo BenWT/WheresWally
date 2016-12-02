@@ -46,9 +46,7 @@ public:
 	}
 
 	// Constructors
-	Image() {
-		std::cout << "Initialised Empty Image." << std::endl;
-	}
+	Image() {}
 	Image(int width, int height) {
 		this->width = width;
 		this->height = height;
@@ -80,4 +78,3 @@ public:
 protected:
 	Matrix* matrix;
 };
-
