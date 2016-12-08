@@ -74,7 +74,7 @@ public:
 	~Matrix() {
 		delete[] structure;
 	}
-	
+
 	// Operator Overloads
 	Matrix& operator+=(const Matrix& other) {
 		assert(this->width == other.width);
@@ -108,7 +108,7 @@ public:
 		left -= right;
 		return right;
 	}
-	// TODO swap to friend operators 
+	// TODO swap to friend operators
 	Matrix* operator*(const Matrix& other) {
 		assert(this->width == other.height);
 		int commonValue = this->width;
@@ -117,7 +117,7 @@ public:
 
 		for (int x = 0; x < temp->width; x++) {
 			for (int y = 0; y < temp->height; y++) {
-				int value = 0;
+				double value = 0;
 
 				for (int i = 0; i < commonValue; i++) {
 					value += this->structure[i, y] + other.structure[x, i];

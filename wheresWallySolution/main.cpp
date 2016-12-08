@@ -3,16 +3,13 @@
 #include <fstream>
 #include <istream>
 #include <string>
-#include <vector>
-#include <iterator>
-#include <algorithm>
 #include <cstddef>
 
 #include "Globals.h"
 #include "Matrix.h"
 #include "Image.h"
 #include "FullImage.h"
-#include "PartialImage.h"
+#include "MatchImage.h"
 #include "SearchImage.h"
 
 using namespace std;
@@ -20,8 +17,8 @@ using namespace std;
 string GetPathFromFullPath(const string&);
 string GetfilenameFromFullPath(const string&);
 bool ReadImage(string, int , int, double*&);
-bool WriteImage(string, PartialImage*);
-PartialImage* FindWally(Image*, Image*);
+bool WriteImage(string, MatchImage*);
+MatchImage* FindWally(Image*, Image*);
 double CompareImages(Image*, Image*, int, int);
 
 int main(int argc, char* argv[])
@@ -44,8 +41,9 @@ int main(int argc, char* argv[])
 		Image* search = new Image(SEARCH_WIDTH, SEARCH_HEIGHT, subData);
 
 		// Solve
-		PartialImage* result = FindWally(full, search);
-		cout << result->width << " " << result->height << endl;
+		cout << "Searching..." << endl;
+		MatchImage* result = FindWally(full, search);
+		cout << "Best match found at: " << result->offsetX << " " << result->offsetY << endl;
 
 		// Output to file
 		WriteImage(basePath + "\\images\\output.pgm", result);
@@ -59,8 +57,8 @@ int main(int argc, char* argv[])
 
 	system("pause");
 
-	/* delete fullData;
-	delete subData; */
+	delete fullData;
+	delete subData;
 
 	return 0;
 }
@@ -74,8 +72,7 @@ string GetfilenameFromFullPath(const string& str) {
 	return str.substr(found + 1);
 }
 
-bool ReadImage(string filename, int width, int height, double* &data)
-{
+bool ReadImage(string filename, int width, int height, double* &data) {
 	ifstream file(filename.c_str());
 
 	if (file.is_open()) {
@@ -95,15 +92,14 @@ bool ReadImage(string filename, int width, int height, double* &data)
 	}
 }
 
-bool WriteImage(string filename, PartialImage* image)
-{
+bool WriteImage(string filename, MatchImage* image) {
 	unsigned char *out = new unsigned char[image->width * image->height];
 	ofstream file;
 	file.open(filename.c_str(), ios::out | ios::binary | ios::trunc);
 
 	if (file.is_open()) {
 		for (int i = 0; i < image->width * image->height; i++) {
-			out[i] = (unsigned char)image->getValue(i);
+			out[i] = (unsigned char)image->matrix->getValue(i);
 		}
 
 		file << "P5" << endl;
@@ -120,12 +116,8 @@ bool WriteImage(string filename, PartialImage* image)
 	}
 }
 
-PartialImage* FindWally(Image* full, Image* sub)
-{
+MatchImage* FindWally(Image* full, Image* sub) {
 	SearchImage* match = new SearchImage();
-
-	cout << "full: " << full->width << " " << full->height << endl;
-	cout << "sub: " << sub->width << " " << sub->height << endl;
 
 	for (int x = 0; x < full->width - sub->width; x++) {
 		for (int y = 0; y < full->height - sub->height; y++) {
@@ -139,11 +131,7 @@ PartialImage* FindWally(Image* full, Image* sub)
 		}
 	}
 
-	cout << match->x << endl;
-	cout << match->y << endl;
-	
-	PartialImage* result = new PartialImage(full, sub->width, sub->height, match->x, match->y);
-
+	MatchImage* result = new MatchImage(full, sub->width, sub->height, match->x, match->y);
 	return result;
 }
 
@@ -152,10 +140,10 @@ double CompareImages(Image* full, Image* sub, int offX, int offY) {
 
 	for (int x = 0; x < sub->width; x++) {
 		for (int y = 0; y < sub->height; y++) {
-			int fullValue = full->getValue(x + offX, y + offY);
-			int searchValue = sub->getValue(x, y);
+			double fullValue = full->matrix->getValue(x + offX, y + offY);
+			double searchValue = sub->matrix->getValue(x, y);
 
-			if (searchValue < 255) { // white background on search image
+			if (searchValue < 255) { // ignore background
 				variance += (fullValue - searchValue) * (fullValue - searchValue);
 			}
 		}
