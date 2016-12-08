@@ -3,9 +3,13 @@
 #include <fstream>
 #include <istream>
 #include <string>
+#include <vector>
+#include <iterator>
+#include <algorithm>
 #include <cstddef>
 
 #include "Globals.h"
+#include "Matrix.h"
 #include "Image.h"
 #include "FullImage.h"
 #include "PartialImage.h"
@@ -17,8 +21,8 @@ string GetPathFromFullPath(const string&);
 string GetfilenameFromFullPath(const string&);
 bool ReadImage(string, int , int, double*&);
 bool WriteImage(string, PartialImage*);
-PartialImage* FindWally(FullImage*, SearchImage*);
-double CompareImages(FullImage*, SearchImage*, int, int);
+PartialImage* FindWally(Image*, Image*);
+double CompareImages(Image*, Image*, int, int);
 
 int main(int argc, char* argv[])
 {
@@ -28,23 +32,20 @@ int main(int argc, char* argv[])
 
 	int numberOfMatches = 1;
 	double* fullData = new double[FULL_LENGTH];
-	double* searchData = new double[SEARCH_LENGTH];
+	double* subData = new double[SEARCH_LENGTH];
 
 	// Load Image Data
 	bool readFull = ReadImage(basePath + "\\images\\Cluttered_scene.txt", FULL_WIDTH, FULL_HEIGHT, fullData);
-	bool readSearch = ReadImage(basePath + "\\images\\Wally_grey.txt", SEARCH_WIDTH, SEARCH_HEIGHT, searchData);
+	bool readSub = ReadImage(basePath + "\\images\\Wally_grey.txt", SEARCH_WIDTH, SEARCH_HEIGHT, subData);
 
-	if (readFull && readSearch) {
-		cout << "Please enter the number of matches you would like to save: ";
-		cin >> numberOfMatches;
-		if (numberOfMatches < 1) numberOfMatches = 1;
-
+	if (readFull && readSub) {
 		// Create Image Objects
-		FullImage* full = new FullImage(FULL_WIDTH, FULL_HEIGHT, fullData);
-		SearchImage* search = new SearchImage(SEARCH_WIDTH, SEARCH_HEIGHT, searchData);
+		Image* full = new Image(FULL_WIDTH, FULL_HEIGHT, fullData);
+		Image* search = new Image(SEARCH_WIDTH, SEARCH_HEIGHT, subData);
 
 		// Solve
 		PartialImage* result = FindWally(full, search);
+		cout << result->width << " " << result->height << endl;
 
 		// Output to file
 		WriteImage(basePath + "\\images\\output.pgm", result);
@@ -58,8 +59,8 @@ int main(int argc, char* argv[])
 
 	system("pause");
 
-	delete fullData;
-	delete searchData;
+	/* delete fullData;
+	delete subData; */
 
 	return 0;
 }
@@ -119,39 +120,40 @@ bool WriteImage(string filename, PartialImage* image)
 	}
 }
 
-PartialImage* FindWally(FullImage* full, SearchImage* search)
+PartialImage* FindWally(Image* full, Image* sub)
 {
-	//PartialImage* result = new PartialImage(search->width, search->height);
+	SearchImage* match = new SearchImage();
 
-	int bestX = 0; int bestY = 0; double lowestDiff = numeric_limits<double>::max();
+	cout << "full: " << full->width << " " << full->height << endl;
+	cout << "sub: " << sub->width << " " << sub->height << endl;
 
-	for (int x = 0; x < full->width - search->width; x++) {
-		for (int y = 0; y < full->height - search->height; y++) {
-			double comparisonValue = CompareImages(full, search, x, y);
+	for (int x = 0; x < full->width - sub->width; x++) {
+		for (int y = 0; y < full->height - sub->height; y++) {
+			double comparisonValue = CompareImages(full, sub, x, y);
 
-			if (comparisonValue < lowestDiff) {
-				bestX = x;
-				bestY = y;
-				lowestDiff = comparisonValue;
+			if (comparisonValue < match->difference) {
+				match->x = x;
+				match->y = y;
+				match->difference = comparisonValue;
 			}
 		}
 	}
-	cout << bestX << endl;
-	cout << bestY << endl;
 
-	PartialImage* result = new PartialImage(full, search->width, search->height, bestX, bestY);
+	cout << match->x << endl;
+	cout << match->y << endl;
+	
+	PartialImage* result = new PartialImage(full, sub->width, sub->height, match->x, match->y);
+
 	return result;
-
-	// http://stackoverflow.com/questions/12598818/finding-a-picture-in-a-picture-with-java
 }
 
-double CompareImages(FullImage* full, SearchImage* search, int offX, int offY) {
+double CompareImages(Image* full, Image* sub, int offX, int offY) {
 	double variance = 0;
 
-	for (int x = 0; x < search->width; x++) {
-		for (int y = 0; y < search->height; y++) {
+	for (int x = 0; x < sub->width; x++) {
+		for (int y = 0; y < sub->height; y++) {
 			int fullValue = full->getValue(x + offX, y + offY);
-			int searchValue = search->getValue(x, y);
+			int searchValue = sub->getValue(x, y);
 
 			if (searchValue < 255) { // white background on search image
 				variance += (fullValue - searchValue) * (fullValue - searchValue);
