@@ -11,7 +11,6 @@ class MatchImage : public Image
 public:
 	// Variables
 	int offsetX, offsetY;
-	double similarity;
 
 	// Methods
 	void setValue(int, int, double);

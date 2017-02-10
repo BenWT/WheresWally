@@ -19,7 +19,6 @@ MatchImage::MatchImage() {
 	this->count = 1;
 	this->length = 0;
 	this->structure = new double[count];
-	this->similarity = std::numeric_limits<double>::max();
 }
 MatchImage::MatchImage(int width, int height, int offsetX, int offsetY) {
 	this->width = width;

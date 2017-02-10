@@ -1,4 +1,12 @@
-﻿  main.cpp
+﻿  MatchImage.cpp
+  MatchData.cpp
+  main.cpp
+  Image.cpp
+  Generating Code...
+d:\development\university\whereswally\whereswally\whereswally\image.cpp(89): warning C4172: returning address of local variable or temporary: temp
+d:\development\university\whereswally\whereswally\whereswally\image.cpp(105): warning C4172: returning address of local variable or temporary: temp
+d:\development\university\whereswally\whereswally\whereswally\image.cpp(130): warning C4172: returning address of local variable or temporary: temp
+  Compiling...
   LargeImage.cpp
   Generating Code...
   wheresWally.vcxproj -> D:\development\university\wheresWally\wheresWally\Debug\wheresWally.exe

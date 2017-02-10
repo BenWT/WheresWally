@@ -11,8 +11,6 @@ class LargeImage : public Image
 {
 public:
 	// Methods
-	void setValue(int, double);
-	void setValue(int, int, double);
 	MatchImage* CreatePartial(int, int, int, int);
 
 	// Inherit Constructors

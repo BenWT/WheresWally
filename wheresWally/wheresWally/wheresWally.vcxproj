@@ -149,12 +149,14 @@
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="LargeImage.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MatchData.cpp" />
     <ClCompile Include="MatchImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="LargeImage.h" />
+    <ClInclude Include="MatchData.h" />
     <ClInclude Include="MatchImage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -7,15 +7,20 @@
 #include <fstream>
 #include <istream>
 #include <string>
+#include <vector>
+#include <algorithm>
 #include "Globals.h"
 #include "Image.h"
 #include "LargeImage.h"
 #include "MatchImage.h"
+#include "MatchData.h"
 
 using namespace std;
+
 bool ReadImage(string, int, int, double*&);
 bool WriteImage(string, MatchImage*);
-MatchImage* DoSearch(LargeImage*, Image*);
+void BubbleSort(vector<MatchData*>&);
+vector<MatchImage*> DoSearch(LargeImage*, Image*, int);
 double CompareImages(LargeImage*, Image*, int, int);
 
 string GetPathFromFullPath(const string& str) {
@@ -36,19 +41,39 @@ int main(int argc, char *argv[])
 	basePath = GetPathFromFullPath(basePath);
 
 	// Load Image Data
+	int matches = 0;
 	double* largeData = new double[LARGE_LENGTH];
 	double* searchData = new double[SEARCH_LENGTH];
 	bool readLarge = ReadImage(basePath + "images\\Cluttered_scene.txt", LARGE_WIDTH, LARGE_HEIGHT, largeData);
 	bool readSub = ReadImage(basePath + "images\\Wally_grey.txt", SEARCH_WIDTH, SEARCH_HEIGHT, searchData);
 
+	cout << "Please enter the number of matches you would like to enter:" << endl;
+	while (!(cin >> matches) || matches <= 0) // Repeatedly cin until matches is above 0
+	{
+		cout << "Please enter a valid number: ";
+
+		// Clear Input
+		cin.clear();
+		cin.ignore(INT_MAX, '\n'); 
+	}
+
 	if (readLarge && readSub) {
 		// Instantiate Image Objects
 		LargeImage* largeImage = new LargeImage(LARGE_WIDTH, LARGE_HEIGHT, largeData);
 		Image* searchImage = new Image(SEARCH_WIDTH, SEARCH_HEIGHT, searchData);
-		MatchImage* result = DoSearch(largeImage, searchImage);
+		vector<MatchImage*> results = DoSearch(largeImage, searchImage, matches);
 
-		WriteImage(basePath + "images\\output.pgm", result);
+		int counter = 1;
+		vector<MatchImage*>::iterator it;
+		for (it = results.begin(); it < results.end(); it++) {
+			WriteImage(basePath + "images\\output" + to_string(counter) + ".pgm", *it);
+			counter++;
+		}
 
+		for (it = results.begin(); it < results.end(); it++) {
+			delete (*it);
+		}
+		results.clear();
 		delete largeImage;
 		delete searchImage;
 	}
@@ -106,28 +131,60 @@ bool WriteImage(string filename, MatchImage* image) {
 	}
 }
 
-MatchImage* DoSearch(LargeImage* largeImage, Image* search) {
+void BubbleSort(vector<MatchData*>& matches) {
+	bool shouldSort = true, didSwap = false;
+
+	while (shouldSort) {
+		for (int i = 0; i < matches.size() - 1; i++) {
+			if (matches.at(i)->comparison > matches.at(i + 1)->comparison) {
+				MatchData* temp = matches.at(i);
+				matches.at(i) = matches.at(i + 1);
+				matches.at(i + 1) = temp;
+				didSwap = true;
+			}
+		}
+
+		if (didSwap) didSwap = false;
+		else shouldSort = false;
+	}
+}
+
+vector<MatchImage*> DoSearch(LargeImage* largeImage, Image* search, int n) {
 	cout << "Searching..." << endl;
 
-	int bestX = 0, bestY = 0;
-	double bestComparision = std::numeric_limits<double>::max();
+	MatchData bestMatch = MatchData();
+	vector<MatchData*> matches;
 
 	for (int x = 0; x < largeImage->width - search->width; x++) {
 		for (int y = 0; y < largeImage->height - search->height; y++) {
+			double comparison = CompareImages(largeImage, search, x, y);
+			MatchData* currentMatch = new MatchData(x, y, comparison);
 
-			double comparision = CompareImages(largeImage, search, x, y);
+			matches.push_back(currentMatch);
 
-			if (comparision < bestComparision) {
-				bestX = x;
-				bestY = y;
-				bestComparision = comparision;
+			if (matches.size() > n) {
+				BubbleSort(matches);
+				matches.pop_back();
 			}
 		}
 	}
 
+	vector<MatchImage*> matchImages;
+	vector<MatchData*>::iterator it;
+
+	for (it = matches.begin(); it < matches.end(); it++) {
+		MatchImage* result = largeImage->CreatePartial(search->width, search->height, (*it)->x, (*it)->y);
+		matchImages.push_back(result);
+	}
+
+	cout << "got here" << endl;
+	for (it = matches.begin(); it < matches.end(); it++) {
+		delete (*it);
+	}
+	matches.clear();
+
 	cout << "Done Searching." << endl;
-	MatchImage* result = largeImage->CreatePartial(search->width, search->height, bestX, bestY);
-	return result;
+	return matchImages;
 }
 
 double CompareImages(LargeImage* largeImage, Image* search, int offsetX, int offsetY) {

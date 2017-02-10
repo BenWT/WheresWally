@@ -71,16 +71,23 @@ Image::Image(const Image& other) {
 	this->length = other.length;
 	this->structure = other.structure; // TODO Hard copy
 }
+Image::~Image() {
+
+}
 
 // Operator Overloads
 Image& Image::operator+=(const Image& other) {
-	assert(this->width == other.width);
 	assert(this->height == other.height);
 
-	Image temp = Image(other.width, other.height);
+	Image temp = Image(this->width + other.width, other.height);
 
-	for (int i = 0; i < other.width * other.height; i++) {
-		temp.setValue(i, this->structure[i] + other.structure[i]);
+	for (int y = 0; y < this->height; y++) {
+		for (int x = 0; x < this->width; x++) {
+			temp.setValue(x, y, this->structure[x + (this->width * y)]);
+		}
+		for (int x = 0; x < temp.width; x++) {
+			temp.setValue(this->width + x, y, other.structure[x + (this->width * y)]);
+		}
 	}
 
 	return temp;

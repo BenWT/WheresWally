@@ -25,6 +25,7 @@ public:
 	Image(int width, int height);
 	Image(int width, int height, double* matrix);
 	Image(const Image& other);
+	~Image();
 
 	// Operator Overloads
 	Image& operator+=(const Image& other);
